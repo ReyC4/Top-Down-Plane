@@ -10,11 +10,13 @@ public class RandomMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 moveDirection;
     private float timer;
+    private Transform player;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         timer = changeDirectionTime;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
         ChangeDirection();
     }
 
@@ -34,6 +36,7 @@ public class RandomMovement : MonoBehaviour
     void FixedUpdate()
     {
         // Apply movement to the rigidbody
+        Vector2 direction = (player.position - transform.position).normalized;
         rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
     }
 
@@ -45,5 +48,15 @@ public class RandomMovement : MonoBehaviour
 
         // Create a movement vector and normalize it
         moveDirection = new Vector2(moveX, moveY).normalized;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            // Destroy both the enemy and the player
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
+        }
     }
 }
